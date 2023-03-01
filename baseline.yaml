@@ -1,0 +1,55 @@
+- name: Play for configuring workstation baseline
+  hosts: all
+  become: true
+  tasks:
+
+    - name: Install updates
+      ansible.builtin.dnf:
+      when: ansible_distribution == "Fedora"
+
+    - name: Install packages
+      ansible.builtin.dnf:
+        name:
+          - gdm
+          - nautilus
+          - gnome-shell
+          - gnome-terminal
+          - gnome-system-monitor
+          - plymouth-theme-spinner
+          - dnf-automatic
+          - flatpak
+          - distrobox
+          - podman
+          - git
+          - vim-enhanced
+
+    - name: Remove packages
+      ansible.builtin.dnf:
+        name:
+          - gnome-tour
+        state: absent
+
+    - name: Add the flathub flatpak repository
+      community.general.flatpak_remote:
+        name: flathub
+        flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+    - name: Install flatpaks
+      community.general.flatpak:
+        name:
+          - org.gnome.clocks
+          - org.gnome.texteditor
+          - org.gnome.boxes
+          - org.gnome.calculator
+          - org.gnome.evince
+          - org.gnome.logs
+          - org.gnome.eog
+          - ca.desrt.dconf-editor
+          - com.github.adbeveridge.raider
+          - com.github.liferooter.textpieces
+          - com.github.tchx84.flatseal
+          - com.mattjakeman.extensionmanager
+          - com.visualstudio.code
+          - de.haeckerfelix.fragments
+          - net.cozic.joplin_desktop
+          - org.mozilla.firefox
