@@ -1,11 +1,19 @@
 - name: Play for configuring workstation baseline
   hosts: all
-  become: true
   tasks:
 
-    - name: Install updates
+    - name: Update packages
       ansible.builtin.dnf:
+        name: "*"
+      become: true
       when: ansible_distribution == "Fedora"
+
+    - name: Create user 'alex'
+      ansible.builtin.user:
+        name: alex
+        comment: Alex Muir
+        groups: root
+      tags: always
 
     - name: Install packages
       ansible.builtin.dnf:
@@ -22,17 +30,21 @@
           - podman
           - git
           - vim-enhanced
+      become: true
 
     - name: Remove packages
       ansible.builtin.dnf:
         name:
           - gnome-tour
         state: absent
+      become: true
 
-    - name: Add the flathub flatpak repository
+    - name: Enable Flathub repo
       community.general.flatpak_remote:
         name: flathub
         flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+      become: true
+      tags: flatpak
 
     - name: Install flatpaks
       community.general.flatpak:
@@ -53,3 +65,4 @@
           - de.haeckerfelix.fragments
           - net.cozic.joplin_desktop
           - org.mozilla.firefox
+      tags: flatpak
